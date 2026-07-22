@@ -11,8 +11,9 @@ function Login({ apiBase, onLoginSuccess }) {
     e.preventDefault();
     setLoginError("");
     setLoginLoading(true);
+    const requestUrl = `${apiBase}/login`;
     try {
-      const response = await fetch(`${apiBase}/login`, {
+      const response = await fetch(requestUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: loginUsername.trim(), password: loginPassword }),
@@ -31,14 +32,14 @@ function Login({ apiBase, onLoginSuccess }) {
             errMsg = `Error del servidor (${response.status})`;
           }
         }
-        throw new Error(errMsg);
+        throw new Error(`${errMsg} (URL: ${requestUrl})`);
       }
 
       let data;
       try {
         data = await response.json();
       } catch (jsonErr) {
-        throw new Error("La respuesta del servidor no es un JSON válido.");
+        throw new Error(`La respuesta del servidor no es un JSON válido. (URL: ${requestUrl})`);
       }
 
       if (data && data.success) {
