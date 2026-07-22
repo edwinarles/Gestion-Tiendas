@@ -1,0 +1,28 @@
+# Especificación de Render Blueprint para Despliegue de Excel Store Sync
+# Permite crear el Frontend (Static Site) y el Backend (Web Service) enlazados automáticamente.
+
+services:
+  # 1. Backend (Servicio Web de FastAPI)
+  - type: web
+    name: excel-store-sync-backend
+    env: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        sync: false # El usuario ingresará su URL de PostgreSQL (ej. de Neon) en la consola de Render
+      - key: PORT
+        value: 10000
+
+  # 2. Frontend (Sitio Estático de React)
+  - type: static
+    name: excel-store-sync-frontend
+    env: node
+    buildCommand: cd frontend && npm install && npm run build
+    publishPath: frontend/dist
+    envVars:
+      - key: VITE_API_BASE
+        fromService:
+          type: web
+          name: excel-store-sync-backend
+          property: host
