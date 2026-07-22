@@ -15,11 +15,11 @@ services:
         value: 10000
 
   # 2. Frontend (Sitio Estático de React)
-  - type: static
+  - type: web
     name: excel-store-sync-frontend
-    env: node
+    env: static
     buildCommand: cd frontend && npm install && npm run build
-    publishPath: frontend/dist
+    staticPublishPath: frontend/dist
     envVars:
       - key: VITE_API_BASE
         fromService:
