@@ -25,7 +25,4 @@ services:
     staticPublishPath: frontend/dist
     envVars:
       - key: VITE_API_BASE
-        fromService:
-          type: web
-          name: excel-store-sync-backend
-          property: host
+        sync: false
