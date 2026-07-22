@@ -19,12 +19,29 @@ function Login({ apiBase, onLoginSuccess }) {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "Error al iniciar sesión");
+        let errMsg = "Error al iniciar sesión";
+        try {
+          const errorData = await response.json();
+          errMsg = errorData.detail || errMsg;
+        } catch (jsonErr) {
+          try {
+            const textData = await response.text();
+            errMsg = textData || `Error del servidor (${response.status})`;
+          } catch (textErr) {
+            errMsg = `Error del servidor (${response.status})`;
+          }
+        }
+        throw new Error(errMsg);
       }
 
-      const data = await response.json();
-      if (data.success) {
+      let data;
+      try {
+        data = await response.json();
+      } catch (jsonErr) {
+        throw new Error("La respuesta del servidor no es un JSON válido.");
+      }
+
+      if (data && data.success) {
         onLoginSuccess(data.user);
       }
     } catch (err) {
