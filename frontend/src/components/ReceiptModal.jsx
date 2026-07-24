@@ -107,7 +107,7 @@ function ReceiptModal({ receipt, onClose }) {
             <div className="receipt-footer">
               <p>¡Gracias por su preferencia!</p>
               <p style={{ fontSize: "7px", marginTop: "0.25rem", color: "#666" }}>
-                Representación impresa de la Boleta de Venta Electrónica.
+                Representación impresa de la Nota de Venta Electrónica.
               </p>
               {/* Código de barras visual mock mediante SVG */}
               <div className="receipt-barcode-mock">
@@ -126,15 +126,12 @@ function ReceiptModal({ receipt, onClose }) {
           </button>
           <button type="button" className="btn btn-primary" onClick={handlePrint}>
             <Printer size={16} />
-            Imprimir Boleta
+            Imprimir Nota
           </button>
         </div>
       </div>
     </div>
   );
 }
-
-export default ReceiptModal;
-
 
 export default ReceiptModal;
