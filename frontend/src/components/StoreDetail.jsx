@@ -15,6 +15,7 @@ function StoreDetail({
   handleDrop,
   fileInputRef,
   handleFileChange,
+  hideBackButton,
   // Cart props
   cart,
   clientName,
@@ -72,9 +73,11 @@ function StoreDetail({
         </div>
       ) : (
         <div className="vendedor-store-header">
-          <button className="back-btn" onClick={onBackClick}>
-            <ArrowLeft size={18} />
-          </button>
+          {!hideBackButton && (
+            <button className="back-btn" onClick={onBackClick}>
+              <ArrowLeft size={18} />
+            </button>
+          )}
           <h2 className="vendedor-store-name">
             <Store size={20} color="var(--accent-primary)" />
             {storeDetails.info?.name}
