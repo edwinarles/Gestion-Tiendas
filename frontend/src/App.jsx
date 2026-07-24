@@ -129,7 +129,7 @@ function App() {
     if (currentUser) {
       if (activeSection === "dashboard") {
         fetchDashboardData();
-      } else if (activeSection === "stores") {
+      } else if (activeSection === "stores" || activeSection === "finanzas") {
         fetchStores();
       }
     }
@@ -769,7 +769,7 @@ function App() {
               loading={loadingStats}
             />
           ) : activeSection === "finanzas" ? (
-            <SalesHistory apiBase={API_BASE} />
+            <SalesHistory apiBase={API_BASE} stores={stores} />
           ) : activeSection === "usuarios" ? (
             <UsersManagement
               apiBase={API_BASE}
@@ -881,3 +881,4 @@ function App() {
 }
 
 export default App;
+
