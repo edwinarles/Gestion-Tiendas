@@ -20,7 +20,7 @@ const MONTHS = [
 
 const WEEKDAYS = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 
-function SalesHistory({ apiBase }) {
+function SalesHistory({ apiBase, stores = [] }) {
   const [activeDays, setActiveDays] = useState([]);
   const [selectedDate, setSelectedDate] = useState(() => {
     const today = new Date();
@@ -35,6 +35,7 @@ function SalesHistory({ apiBase }) {
   const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear());
   
   const [sales, setSales] = useState([]);
+  const [selectedStoreId, setSelectedStoreId] = useState("all");
   const [loadingDays, setLoadingDays] = useState(false);
   const [loadingSales, setLoadingSales] = useState(false);
 
@@ -144,10 +145,15 @@ function SalesHistory({ apiBase }) {
     setSelectedDate(dateStr);
   };
 
-  // Calcular métricas
-  const totalIncome = sales.reduce((acc, s) => acc + (s.sale_price * s.quantity), 0);
-  const totalProfit = sales.reduce((acc, s) => acc + s.profit, 0);
-  const totalItemsSold = sales.reduce((acc, s) => acc + s.quantity, 0);
+  // Filtrar ventas por tienda seleccionada
+  const filteredSales = selectedStoreId === "all"
+    ? sales
+    : sales.filter(s => String(s.store_id) === String(selectedStoreId));
+
+  // Calcular métricas basadas en las ventas filtradas
+  const totalIncome = filteredSales.reduce((acc, s) => acc + (s.sale_price * s.quantity), 0);
+  const totalProfit = filteredSales.reduce((acc, s) => acc + s.profit, 0);
+  const totalItemsSold = filteredSales.reduce((acc, s) => acc + s.quantity, 0);
 
   // Construcción de la cuadrícula del calendario
   const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
@@ -370,13 +376,39 @@ function SalesHistory({ apiBase }) {
 
         {/* Columna Derecha: Detalle de productos vendidos */}
         <div className="glass-card" style={{ display: "flex", flexDirection: "column" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
             <h2 className="card-title" style={{ margin: 0, fontSize: "1.1rem" }}>
               Ventas Registradas: {new Date(selectedDate + "T00:00:00").toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
             </h2>
-            <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)", background: "var(--bg-tertiary)", padding: "0.25rem 0.6rem", borderRadius: "9999px", fontWeight: 500 }}>
-              {sales.length} {sales.length === 1 ? "Venta" : "Ventas"}
-            </span>
+            
+            <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+              {/* Selector de Tienda */}
+              {stores && stores.length > 0 && (
+                <select
+                  value={selectedStoreId}
+                  onChange={(e) => setSelectedStoreId(e.target.value)}
+                  className="form-input"
+                  style={{ 
+                    width: "auto", 
+                    minWidth: "160px", 
+                    padding: "0.4rem 2rem 0.4rem 0.75rem", 
+                    fontSize: "0.85rem", 
+                    height: "auto", 
+                    minHeight: "34px",
+                    margin: 0
+                  }}
+                >
+                  <option value="all">Todas las Tiendas</option>
+                  {stores.map(store => (
+                    <option key={store.id} value={store.id}>{store.name}</option>
+                  ))}
+                </select>
+              )}
+
+              <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)", background: "var(--bg-tertiary)", padding: "0.25rem 0.6rem", borderRadius: "9999px", fontWeight: 500 }}>
+                {filteredSales.length} {filteredSales.length === 1 ? "Venta" : "Ventas"}
+              </span>
+            </div>
           </div>
 
           {loadingSales ? (
@@ -392,13 +424,20 @@ function SalesHistory({ apiBase }) {
                 No se registraron ventas en esta fecha. Selecciona otro día con un punto indicador en el calendario.
               </p>
             </div>
+          ) : filteredSales.length === 0 ? (
+            <div className="empty-state" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "4rem 2rem" }}>
+              <CalendarIcon size={48} className="empty-state-icon" style={{ opacity: 0.3, marginBottom: "1rem" }} />
+              <p className="empty-state-title" style={{ fontSize: "1.05rem", fontWeight: 600, color: "var(--text-primary)", marginBottom: "0.5rem" }}>Sin ventas en esta tienda</p>
+              <p className="empty-state-desc" style={{ fontSize: "0.85rem", color: "var(--text-secondary)", textAlign: "center", maxWidth: "320px" }}>
+                No se registraron ventas para la tienda seleccionada en esta fecha.
+              </p>
+            </div>
           ) : (
             <div className="table-container" style={{ border: "none", boxShadow: "none", maxHeight: "none", flex: 1 }}>
               <table className="data-table">
                 <thead>
                   <tr>
                     <th>Hora</th>
-                    <th>Tienda</th>
                     <th>Cod. Producto</th>
                     <th>Descripción</th>
                     <th>Cant.</th>
@@ -409,18 +448,12 @@ function SalesHistory({ apiBase }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {sales.map((sale, idx) => (
+                  {filteredSales.map((sale, idx) => (
                     <tr key={sale.id || idx}>
                       <td style={{ color: "var(--text-secondary)" }}>
                         <span style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
                           <Clock size={13} style={{ color: "var(--text-muted)" }} />
                           {formatSaleTime(sale.sold_at)}
-                        </span>
-                      </td>
-                      <td>
-                        <span style={{ display: "flex", alignItems: "center", gap: "0.35rem", fontWeight: 500 }}>
-                          <Store size={13} style={{ color: "var(--accent-primary)" }} />
-                          {sale.store_name}
                         </span>
                       </td>
                       <td>
