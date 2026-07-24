@@ -229,9 +229,10 @@ function App() {
       const data = await response.json();
       setStores(data);
       
-      // Si el rol es "vendedor" y tiene una tienda asignada, cargar de frente sus detalles
-      if (role === "vendedor" && currentUser?.store_id) {
-        fetchStoreDetails(currentUser.store_id);
+      // Si el rol es "vendedor", cargar de frente los detalles de su tienda asignada o la primera disponible
+      if (role === "vendedor" && data.length > 0) {
+        const storeIdToLoad = currentUser?.store_id || data[0].id;
+        fetchStoreDetails(storeIdToLoad);
       }
     } catch (err) {
       showNotification("error", err.message);
@@ -722,7 +723,7 @@ function App() {
         activeSection={activeSection}
         setActiveSection={(section) => {
           setActiveSection(section);
-          if (section === "stores" && !(role === "vendedor" && currentUser?.store_id)) {
+          if (section === "stores" && role !== "vendedor") {
             setSelectedStore(null);
           }
         }}
@@ -777,14 +778,13 @@ function App() {
               showNotification={showNotification}
             />
           ) : !selectedStore ? (
-            role === "vendedor" && currentUser?.store_id ? (
+            role === "vendedor" ? (
               <div className="loading-container" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "50vh", gap: "1rem" }}>
                 <div className="spinner"></div>
                 <span className="loading-text">Cargando información de la tienda...</span>
               </div>
             ) : (
               <Dashboard
-                role={role}
                 newStoreName={newStoreName}
                 setNewStoreName={setNewStoreName}
                 handleCreateStore={handleCreateStore}
@@ -808,7 +808,7 @@ function App() {
               handleDrop={handleDrop}
               fileInputRef={fileInputRef}
               handleFileChange={handleFileChange}
-              hideBackButton={role === "vendedor" && currentUser?.store_id ? true : false}
+              hideBackButton={role === "vendedor" ? true : false}
               // Cart props
               cart={cart}
               clientName={clientName}
@@ -881,4 +881,3 @@ function App() {
 }
 
 export default App;
-
