@@ -228,6 +228,11 @@ function App() {
       if (!response.ok) throw new Error("No se pudo obtener la lista de tiendas.");
       const data = await response.json();
       setStores(data);
+      
+      // Si el rol es "vendedor" y tiene una tienda asignada, cargar de frente sus detalles
+      if (role === "vendedor" && currentUser?.store_id) {
+        fetchStoreDetails(currentUser.store_id);
+      }
     } catch (err) {
       showNotification("error", err.message);
     } finally {
@@ -717,7 +722,7 @@ function App() {
         activeSection={activeSection}
         setActiveSection={(section) => {
           setActiveSection(section);
-          if (section === "stores") {
+          if (section === "stores" && !(role === "vendedor" && currentUser?.store_id)) {
             setSelectedStore(null);
           }
         }}
@@ -796,6 +801,7 @@ function App() {
               handleDrop={handleDrop}
               fileInputRef={fileInputRef}
               handleFileChange={handleFileChange}
+              hideBackButton={role === "vendedor" && currentUser?.store_id ? true : false}
               // Cart props
               cart={cart}
               clientName={clientName}
