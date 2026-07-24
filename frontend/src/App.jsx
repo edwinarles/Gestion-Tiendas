@@ -777,17 +777,24 @@ function App() {
               showNotification={showNotification}
             />
           ) : !selectedStore ? (
-            <Dashboard
-              role={role}
-              newStoreName={newStoreName}
-              setNewStoreName={setNewStoreName}
-              handleCreateStore={handleCreateStore}
-              loading={loading}
-              stores={stores}
-              fetchStoreDetails={fetchStoreDetails}
-              handleDeleteStore={handleDeleteStore}
-              apiBase={API_BASE}
-            />
+            role === "vendedor" && currentUser?.store_id ? (
+              <div className="loading-container" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "50vh", gap: "1rem" }}>
+                <div className="spinner"></div>
+                <span className="loading-text">Cargando información de la tienda...</span>
+              </div>
+            ) : (
+              <Dashboard
+                role={role}
+                newStoreName={newStoreName}
+                setNewStoreName={setNewStoreName}
+                handleCreateStore={handleCreateStore}
+                loading={loading}
+                stores={stores}
+                fetchStoreDetails={fetchStoreDetails}
+                handleDeleteStore={handleDeleteStore}
+                apiBase={API_BASE}
+              />
+            )
           ) : (
             <StoreDetail
               storeDetails={storeDetails}
