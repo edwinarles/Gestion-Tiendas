@@ -33,7 +33,7 @@ function ReceiptModal({ receipt, onClose }) {
               <h2 className="receipt-brand">CLANDBUS</h2>
               <p className="receipt-subbrand">Soluciones de Inventario</p>
               <div className="receipt-dashed-divider"></div>
-              <h3 className="receipt-title">BOLETA DE VENTA ELECTRÓNICA</h3>
+              <h3 className="receipt-title">NOTA DE VENTA ELECTRÓNICA</h3>
               <p className="receipt-number">{receipt.boletaNumber}</p>
               <div className="receipt-dashed-divider"></div>
             </div>
@@ -133,5 +133,8 @@ function ReceiptModal({ receipt, onClose }) {
     </div>
   );
 }
+
+export default ReceiptModal;
+
 
 export default ReceiptModal;
