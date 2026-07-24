@@ -72,17 +72,17 @@ function StoreDetail({
           </div>
         </div>
       ) : (
-        <div className="vendedor-store-header">
-          {!hideBackButton && (
+        !hideBackButton && (
+          <div className="vendedor-store-header">
             <button className="back-btn" onClick={onBackClick}>
               <ArrowLeft size={18} />
             </button>
-          )}
-          <h2 className="vendedor-store-name">
-            <Store size={20} color="var(--accent-primary)" />
-            {storeDetails.info?.name}
-          </h2>
-        </div>
+            <h2 className="vendedor-store-name">
+              <Store size={20} color="var(--accent-primary)" />
+              {storeDetails.info?.name}
+            </h2>
+          </div>
+        )
       )}
 
       <div className="dashboard-grid">
