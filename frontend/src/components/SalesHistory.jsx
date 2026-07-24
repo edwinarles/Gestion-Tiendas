@@ -211,7 +211,7 @@ function SalesHistory({ apiBase }) {
         <span className="dashboard-page-subtitle">Visualización diaria de productos vendidos e ingresos</span>
       </div>
 
-      <div className="dashboard-grid" style={{ gridTemplateColumns: "minmax(320px, 350px) 1fr", gap: "2rem" }}>
+      <div className="dashboard-grid" style={{ gridTemplateColumns: "minmax(320px, 350px) minmax(0, 1fr)", gap: "2rem" }}>
         
         {/* Columna Izquierda: Calendario & KPIs */}
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
@@ -528,3 +528,4 @@ function SalesHistory({ apiBase }) {
 }
 
 export default SalesHistory;
+
